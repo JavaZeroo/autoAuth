@@ -2,40 +2,11 @@ import requests
 from pathlib import Path
 import yaml
 from bs4 import BeautifulSoup
-
-class Config():
-    def __init__(self, username, password) -> None:
-        self.username = str(username)
-        self.password = str(password)
-
-
-class yidong(Config):
-    def __init__(self, username, password) -> None:
-        super().__init__(username, password)
-        self.domain = '@yidong'
-class liantong(Config):
-    def __init__(self, username, password) -> None:
-        super().__init__(username, password)
-        self.domain = '@liantong'
-class dianxin(Config):
-    def __init__(self, username, password) -> None:
-        super().__init__(username, password)
-        self.domain = '@dianxin'
-class jiaoyu(Config):
-    def __init__(self, username, password) -> None:
-        super().__init__(username, password)
-        self.domain = '@jiaoyu'
-        
-configs = {
-    'yidong': yidong, 
-    'liantong': liantong, 
-    
-    
-}
+from Config import domain_configs
 
 class Loginer:
-    def __init__(self, username, password, domain, cache=True, debug=False):
-
+    def __init__(self, config, cache=True, debug=False):
+        self.config = config
         self.cache = cache
         self.debug = debug
         if cache:
@@ -43,17 +14,17 @@ class Loginer:
             self.cache_path.mkdir(exist_ok=True)
             with open(self.cache_path / 'cache_config.yaml', 'w') as f:
                 yaml.dump({
-                    'username': self.username,
-                    'password': self.password,
-                    'domain': self.domain,
+                    'username': self.config.username,
+                    'password': self.config.password,
+                    'domain': self.config.domain,
                 }, f)
         else:
             self.cache_path = None
 
     def login(self,):
-        username = self.username
-        password = self.password
-        domain = self.domain
+        username = self.config.username
+        password = self.config.password
+        domain = self.config.domain
 
         payload = {
             'action': 'login',
@@ -130,7 +101,8 @@ class Loginer:
 
 
 if __name__ == '__main__':
-    config = yaml.load(open('config.yaml', 'r'), Loader=yaml.FullLoader)
-    loginer = Loginer(**config)
+    ymlconfig = yaml.load(open('config.yaml', 'r'), Loader=yaml.FullLoader)
+    config = domain_configs[ymlconfig['domain']](**ymlconfig)
+    loginer = Loginer(config)
     res = loginer.login()
     loginer.prase(res)
