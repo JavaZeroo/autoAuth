@@ -1,7 +1,6 @@
 import requests
 from pathlib import Path
 import yaml
-from bs4 import BeautifulSoup
 from Config import domain_configs
 
 class Loginer:
@@ -76,6 +75,12 @@ class Loginer:
         return ret
     
     def prase(self, ret):
+        try:
+            from bs4 import BeautifulSoup
+        except ImportError:
+            print("未安装 bs4，不进行解析")
+            print(ret)
+            return
         soup = BeautifulSoup(ret, 'html.parser')
 
         # handle with error msg
@@ -106,3 +111,5 @@ if __name__ == '__main__':
     loginer = Loginer(config)
     res = loginer.login()
     loginer.prase(res)
+
+        
