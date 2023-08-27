@@ -1,7 +1,6 @@
 import requests
 from pathlib import Path
 import yaml
-from Config import domain_configs
 
 class Loginer:
     def __init__(self, config, cache=True, debug=False):
@@ -102,14 +101,4 @@ class Loginer:
                     row_data.append(t)
             if len(row_data) > 0:
                 print("\n".join(row_data))
-                print('=============')
-
-
-if __name__ == '__main__':
-    ymlconfig = yaml.load(open('config.yaml', 'r'), Loader=yaml.FullLoader)
-    config = domain_configs[ymlconfig['domain']](**ymlconfig)
-    loginer = Loginer(config)
-    res = loginer.login()
-    loginer.prase(res)
-
-        
+                print('=============')        
